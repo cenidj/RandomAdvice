@@ -8,41 +8,48 @@
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject var viewModel = RandomAdviceViewModel()
+    
     var body: some View {
         ZStack {
-            Color("backgroundColor")
+            Color(.background)
                 .ignoresSafeArea()
             
             
             VStack (spacing: 20) {
-                Text("Advice #118")
+                Text("Advice #\(viewModel.adviceNumber)")
                     .font(.title2.bold())
-                    .foregroundStyle(Color("textColor"))
+                    .foregroundStyle(.text)
                 
-                Text("A common regret in life is wishing one hadn't worked so hard.")
+                Text(viewModel.advice?.slip.advice ?? "")
                     .font(.system(size: 24))
-                    .foregroundStyle(Color("adviceColor"))
+                    .foregroundStyle(.advice)
                     .frame(maxHeight: .infinity)
                     .padding(.bottom)
             }
             .padding()
             .frame(width: 350, height: 250)
-            .background(Color("secondaryBackgroundColor"))
+            .background(.secondaryBackground)
             .clipShape(.rect(cornerRadius: 20))
             
             
             Button {
-                
+                Task {
+                    await viewModel.getAdvice()
+                }
                 
             } label: {
                 Image(systemName: "dice.fill")
                     .font(.title2)
-                    .foregroundStyle(Color("backgroundColor"))
+                    .foregroundStyle(Color(.background))
             }
             .padding()
-            .background(Color("textColor"))
+            .background(.text)
             .clipShape(Circle())
             .offset(y: 120)
+        }
+        .task {
+            await viewModel.getAdvice()
         }
     }
 }
